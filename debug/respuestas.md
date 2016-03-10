@@ -51,7 +51,8 @@ gcc ./fpe_x87_sse/fpe_x87_sse.o test_fpe1.o -lm -o test_fpe1.e
 Sin la opcion -DTRAPFPE corria pero daba infinito (c=inf) y cuando hacia 0/0 daba 0. En cambio incluyendola se logra que de resultado correcto, y en caso de hacer 0/0 al ser una indeterminacion el programa se cierra diciendo que es una excepcion de ncoma flotante ('core' generado). Esto es correcto, ya que no podria dar un valor como resultado.
 
 
-
-
+Segmentation Fault:
+source.f90, my_func.f
+Cuando corro el big.x el problema de segmentation fault se debe a que el size=< error de lectura de variable: No se puede acceder a la memoria 
 
 
