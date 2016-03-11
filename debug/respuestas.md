@@ -55,4 +55,50 @@ Segmentation Fault:
 source.f90, my_func.f
 Cuando corro el big.x el problema de segmentation fault se debe a que el size=< error de lectura de variable: No se puede acceder a la memoria 
 
+valgrind/
+compilo (con flag -g) 
+gcc -g -c source1.c
+gcc source1.o -o source1.e
+
+y ejecuto valgrind ./source1.e
+$ valgrind --leak-check=full --track-origins=yes ./source1.e
+==4837== Memcheck, a memory error detector
+==4837== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==4837== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==4837== Command: ./source1.e
+==4837== 
+==4837== 
+==4837== HEAP SUMMARY:
+==4837==     in use at exit: 3,960,000 bytes in 99 blocks
+==4837==   total heap usage: 101 allocs, 2 frees, 4,040,000 bytes allocated
+==4837== 
+==4837== 3,960,000 bytes in 99 blocks are definitely lost in loss record 1 of 1
+==4837==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==4837==    by 0x4005D6: mat_Tmat_mul (source1.c:30)
+==4837==    by 0x4007C8: main (source1.c:59)
+==4837== 
+==4837== LEAK SUMMARY:
+==4837==    definitely lost: 3,960,000 bytes in 99 blocks
+==4837==    indirectly lost: 0 bytes in 0 blocks
+==4837==      possibly lost: 0 bytes in 0 blocks
+==4837==    still reachable: 0 bytes in 0 blocks
+==4837==         suppressed: 0 bytes in 0 blocks
+==4837== 
+==4837== For counts of detected and suppressed errors, rerun with: -v
+==4837== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+Es un problema de Memory LEAK, me marca que el problema esta en el for de 99 bloques (yo cambie el FOR de 1 a SIZE=100) y luego en el LEAK summary me da informacion que el error lo tiene en la funcion mat_Tmat_mul, lineas 30, y del main linea 59. (La info del numero de lineas me la da si compilo con flag -g).
+
+
+funny/
+compilo sin -DDEBUG:
+gcc -g -c test_oob2.c
+gcc test_oob2.o -o test_oob2.e
+Cuando ejecuto ./test_oob2.e me tira violacion de segmento.
+
+Cuando compilo con -DDEBUG:
+gcc -g -c -DDEBUG test_oob2.c 
+gcc test_oob2.o -o test_oob2.e
+
+Cuando ejecuto me tira violacion de segmento pero tambien me hace un print del string I'm HERE!!! diciendome donde esta el bug.
 
