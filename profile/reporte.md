@@ -99,9 +99,48 @@ $ perf stat ./profile_me_1_pg_O0.e
 
        0,090579899 seconds time elapsed
 
+%%%Pruebo el perf record para la optimizacion -O3
+perf record ./profile_me_1_pg_O3.e 
+WARNING: Kernel address maps (/proc/{kallsyms,modules}) are restricted,
+check /proc/sys/kernel/kptr_restrict.
+
+Samples in kernel functions may not be resolved if a suitable vmlinux
+file is not found in the buildid cache or in the vmlinux path.
+
+Samples in kernel modules won't be resolved at all.
+
+If some relocation was applied (e.g. kexec) symbols may be misresolved
+even with a suitable vmlinux or kallsyms file.
+
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.002 MB perf.data (~69 samples) ]
+[kernel.kallsyms] with build id dba2ede7a119af631d2587d4b7bcf51282419cb8 not found, continuing without symbols
+
+perf report -i perf.data 
+
+ulimit -s unlimited: le pongo memoria estatica (stack) ilimitada. Lo vuelvo a compilar con las tres optimizaciones y le hago perf. Ahora tengo mas informacion de lo que esta haciendo.
+Idem cuando hago un gprof, me da toda la info.
+Por ejemplo con optimizacion O1 que antes tiraba seg.fault, ahora corre (porque le puse stack memory unlimited) y ejecuta la first assign y second assign (con O3 la optimizacion se daba cuenta que no las usaba despues entonces directamente no las hacia, por eso no habia info en el profile.data y el perf record). Ahora si las hace y te el profiling del tiempo en cada operacion que hace.
 
 
 
+*********************
+%Profile_me_2.c
+compilo 
+$ gcc -g profile_me_2.c -pg -lm -O0 -o profile_me_2_pg_O0.e
+y luego hago un debugger
+$ gdb ./profile_me_2_pg_O0.e
 
+(gdb) br 10
+(gdb) r
+(gdb) print dim
+$1 = 18446744069414584321
+(gdb) print argv[1]
+$2 = 0x0
 
+Ese argv[1] es para ingresarlo cuando lo ejecutas al programa directamente (en este caso es un solo elemento de entrada). 
+./profile_me2_pg_O0.e 5
+
+Al no ingresar (espacio) [valor] me tira 0x0 porque lo deje en blanco, y entonces cuando lo busca y hace el atoi me manda a cualquier lado, por eso dim da cualquier cosa.
+ 
 
